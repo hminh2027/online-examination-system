@@ -12,6 +12,7 @@ import {
   useColorModeValue,
   Switch,
   Select,
+  useToast,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import React from "react";
@@ -20,6 +21,8 @@ import { getAPI, postAPI } from "../../apis/axios";
 const createExamPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [modules, setModules] = useState([]);
+  const toast = useToast();
+
   const [data, setData] = useState({
     number: 0,
     moduleCode: "",
@@ -45,9 +48,20 @@ const createExamPage = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    console.log(data);
-    const rs = await postAPI("exam/create", data);
-    console.log(rs);
+    try {
+      await postAPI("exam/create", data);
+      toast({
+        title: `Tạo bài kiểm tra thành công!`,
+        status: "success",
+        isClosable: true,
+      });
+    } catch {
+      toast({
+        title: ` Thất bại!`,
+        status: "error",
+        isClosable: true,
+      });
+    }
   };
 
   return (

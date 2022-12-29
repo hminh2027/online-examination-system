@@ -1,11 +1,18 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { Flex, Stack, Heading, useColorModeValue } from "@chakra-ui/react";
+import {
+  Flex,
+  Stack,
+  Heading,
+  useColorModeValue,
+  Text,
+} from "@chakra-ui/react";
 import QuestionCard from "../../../../components/QuestionCard";
 import { getAPI } from "../../../../apis/axios.js";
 
 const questionPage = () => {
   const router = useRouter();
+  const [exam, setExam] = useState();
   const { id } = router.query;
 
   useEffect(() => {
@@ -13,7 +20,7 @@ const questionPage = () => {
 
     getAPI(`exam/${id}`).then((res) => {
       if (!res.data) alert("EXAM NOT FOUND!");
-      console.log(res);
+      else setExam(res.data);
     });
   }, [router.isReady]);
   return (
@@ -28,6 +35,11 @@ const questionPage = () => {
           <Heading fontSize={"4xl"} textAlign={"center"}>
             Tạo Câu Hỏi
           </Heading>
+          {exam && (
+            <Text fontSize={"lg"} color={"gray.600"}>
+              cho bài kiểm tra: <b>{exam.title}</b>
+            </Text>
+          )}
         </Stack>
         <QuestionCard examId={id} />
       </Stack>

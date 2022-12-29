@@ -10,24 +10,26 @@ export const createExam = async (req, res) => {
     number,
     moduleCode,
   } = req.body;
-  const exam = await prisma.exam.create({
-    data: {
-      title,
-      duration: +duration,
-      password,
-      moduleCode,
-      number: +number,
-      numberOfQuestions: +numberOfQuestions,
-      score: +score,
-    },
-  });
-  console.log(exam);
-  res.send("abc");
+  try {
+    const exam = await prisma.exam.create({
+      data: {
+        title,
+        duration: +duration,
+        password,
+        moduleCode,
+        number: +number,
+        numberOfQuestions: +numberOfQuestions,
+        score: +score,
+      },
+    });
+    res.status(200).json(exam);
+  } catch (e) {
+    res.status(400).json(e);
+  }
 };
 export const getExamById = async (req, res) => {
   const { id } = req.params;
   if (!id) res.send("Error id not found!");
   const exam = await prisma.exam.findFirst({ where: { id: +id } });
-  res.send(exam);
+  res.json(exam);
 };
-export const getExams = (req, res) => {};
