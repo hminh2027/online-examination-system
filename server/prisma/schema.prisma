@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model Module {
+  moduleCode String @id
+  exams      Exam[]
+  name       String
+}
+
+model Account {
+  id           Int            @id @default(autoincrement())
+  examAccounts Exam_Account[]
+  email        String         @unique
+  name         String
+  password     String
+  role         String
+}
+
+model Exam {
+  id                Int            @id @default(autoincrement())
+  number            Int
+  Module            Module         @relation(fields: [moduleCode], references: [moduleCode])
+  moduleCode        String
+  questions         Question[]
+  examAccounts      Exam_Account[]
+  title             String
+  duration          Int
+  password          String
+  numberOfQuestions Int
+  score             Int
+
+  @@unique([moduleCode, number])
+}
+
+model Answer {
+  id          Int      @id @default(autoincrement())
+  Question    Question @relation(fields: [questionId], references: [id])
+  questionId  Int
+  number      Int
+  description String
+
+  @@unique([number, questionId])
+}
+
+model Account_Question {
+  id               Int          @id @default(autoincrement())
+  Exam_Account     Exam_Account @relation(fields: [exam_AccountTime], references: [time], onUpdate: NoAction, onDelete: NoAction)
+  exam_AccountTime DateTime
+  questionId       Int
+  Question         Question     @relation(fields: [questionId], references: [id])
+  answer           Int
+
+  @@unique([exam_AccountTime, questionId])
+}
+
+model Question {
+  id               Int                @id @default(autoincrement())
+  Exam             Exam               @relation(fields: [examId], references: [id])
+  examId           Int
+  number           Int
+  correctAnswer    Int
+  accountQuestions Account_Question[]
+  answers          Answer[]
+  description      String
+
+  @@unique([number, examId])
+}
+
+model Exam_Account {
+  time             DateTime           @id @default(now())
+  Exam             Exam               @relation(fields: [examId], references: [id])
+  Account          Account            @relation(fields: [accountEmail], references: [email])
+  examId           Int
+  accountEmail     String
+  accountQuestions Account_Question[]
+  score            Int
+
+  @@unique([time, accountEmail])
+}
